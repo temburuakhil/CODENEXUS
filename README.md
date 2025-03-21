@@ -1,4 +1,4 @@
-# Vite React TypeScript Starter
+# FIN X
 
 A modern React application starter template built with Vite, TypeScript, and Tailwind CSS.
 
