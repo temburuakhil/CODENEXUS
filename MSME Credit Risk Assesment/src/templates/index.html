@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSME Credit Risk Assessment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>MSME Credit Risk Assessment</h1>
+            <p>Enter your business details below for a comprehensive risk assessment</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="form-container">
+            <form id="assessmentForm">
+                <div class="form-section">
+                    <h2>Core Business Parameters</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="business_vintage">Business Vintage (years)</label>
+                            <input type="number" id="business_vintage" name="business_vintage" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="existing_loan_count">Number of Active Loans</label>
+                            <input type="number" id="existing_loan_count" name="existing_loan_count" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="repayment_delays">Repayment Delays</label>
+                            <input type="number" id="repayment_delays" name="repayment_delays" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="annual_turnover">Annual Turnover (in lakhs)</label>
+                            <input type="number" id="annual_turnover" name="annual_turnover" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profit_margin">Profit Margin (as decimal)</label>
+                            <input type="number" id="profit_margin" name="profit_margin" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="debt_to_income_ratio">Debt-to-Income Ratio</label>
+                            <input type="number" id="debt_to_income_ratio" name="debt_to_income_ratio" step="0.01" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>Alternative Data</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="gst_filing_delay">GST Filing Delay (days)</label>
+                            <input type="number" id="gst_filing_delay" name="gst_filing_delay" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="upi_monthly_volume">Monthly UPI Volume (in lakhs)</label>
+                            <input type="number" id="upi_monthly_volume" name="upi_monthly_volume" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="upi_volatility">UPI Volatility</label>
+                            <input type="number" id="upi_volatility" name="upi_volatility" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="social_media_rating">Social Media Rating (out of 5)</label>
+                            <input type="number" id="social_media_rating" name="social_media_rating" step="0.1" max="5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="negative_keywords">Number of Negative Keywords</label>
+                            <input type="number" id="negative_keywords" name="negative_keywords" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="avg_monthly_balance">Average Monthly Balance (in thousands)</label>
+                            <input type="number" id="avg_monthly_balance" name="avg_monthly_balance" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="min_monthly_balance">Minimum Monthly Balance (in thousands)</label>
+                            <input type="number" id="min_monthly_balance" name="min_monthly_balance" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="ecommerce_rating">E-commerce Rating (out of 5)</label>
+                            <input type="number" id="ecommerce_rating" name="ecommerce_rating" step="0.1" max="5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="return_rate">Return Rate</label>
+                            <input type="number" id="return_rate" name="return_rate" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="industry_risk">Industry Risk</label>
+                            <select id="industry_risk" name="industry_risk" required>
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>Business Metadata</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="business_type">Business Type</label>
+                            <select id="business_type" name="business_type" required>
+                                <option value="Proprietorship">Proprietorship</option>
+                                <option value="Partnership">Partnership</option>
+                                <option value="Pvt. Ltd.">Private Limited</option>
+                                <option value="LLP">LLP</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="employee_count">Number of Employees</label>
+                            <input type="number" id="employee_count" name="employee_count" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="location_type">Location Type</label>
+                            <select id="location_type" name="location_type" required>
+                                <option value="urban">Urban</option>
+                                <option value="rural">Rural</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Calculate Risk Assessment</button>
+            </form>
+        </div>
+
+        <div class="result-container" id="resultContainer">
+            <div class="result-header">
+                <h2>Risk Assessment Results</h2>
+            </div>
+            <div class="result-grid">
+                <div class="result-card risk-score">
+                    <h3>Credit Risk Score</h3>
+                    <div class="value" id="riskScore">--</div>
+                    <div class="label">out of 100</div>
+                </div>
+                <div class="result-card risk-tier">
+                    <h3>Risk Tier</h3>
+                    <div class="value" id="riskTier">--</div>
+                </div>
+                <div class="result-card probability">
+                    <h3>Probability of Default</h3>
+                    <div class="value" id="defaultProbability">--</div>
+                </div>
+            </div>
+            <div class="recommendation" id="recommendation"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('assessmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            try {
+                const response = await fetch('/assess', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('riskScore').textContent = result.risk_score;
+                    document.getElementById('riskTier').textContent = result.risk_tier;
+                    document.getElementById('defaultProbability').textContent = result.probability_of_default;
+                    document.getElementById('recommendation').textContent = result.recommendation;
+                    
+                    document.getElementById('resultContainer').style.display = 'block';
+                    document.getElementById('errorMessage').style.display = 'none';
+                } else {
+                    document.getElementById('errorMessage').textContent = result.error;
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('resultContainer').style.display = 'none';
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = 'An error occurred while processing your request.';
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('resultContainer').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html> 
