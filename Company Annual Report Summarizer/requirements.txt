@@ -1,0 +1,7 @@
+Flask
+requests
+pdfplumber
+matplotlib
+wordcloud
+nltk
+textblob
