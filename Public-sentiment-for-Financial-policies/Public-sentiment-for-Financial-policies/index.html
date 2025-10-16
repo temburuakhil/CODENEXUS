@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Financial Policy Analysis Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #1a237e;
+            --secondary-color: #0d47a1;
+            --positive-color: #4caf50;
+            --negative-color: #f44336;
+            --neutral-color: #9e9e9e;
+            --background-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .card, .chart-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .news-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--neutral-color);
+        }
+
+        .news-item.positive {
+            border-left-color: var(--positive-color);
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+
+        .news-item.negative {
+            border-left-color: var(--negative-color);
+            background-color: rgba(244, 67, 54, 0.1);
+        }
+
+        .news-item.neutral {
+            border-left-color: var(--neutral-color);
+            background-color: rgba(158, 158, 158, 0.1);
+        }
+
+        .source-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 8px;
+        }
+
+        .source-moneycontrol { background-color: #e3f2fd; color: #1565c0; }
+        .source-economictimes { background-color: #fce4ec; color: #c2185b; }
+        .source-businessstandard { background-color: #f3e5f5; color: #7b1fa2; }
+        .source-livemint { background-color: #e8f5e9; color: #2e7d32; }
+
+        .news-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .sentiment-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .positive .sentiment-badge { background-color: var(--positive-color); }
+        .negative .sentiment-badge { background-color: var(--negative-color); }
+        .neutral .sentiment-badge { background-color: var(--neutral-color); }
+
+        .sentiment-analysis {
+            margin-top: 1rem;
+        }
+
+        .sentiment-bar {
+            height: 30px;
+            background-color: #eee;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 1rem 0;
+            display: flex;
+        }
+
+        #positive-sentiment, #neutral-sentiment, #negative-sentiment {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        #positive-sentiment { background-color: var(--positive-color); }
+        #neutral-sentiment { background-color: var(--neutral-color); }
+        #negative-sentiment { background-color: var(--negative-color); }
+
+        .news-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .news-item h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .news-item a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 0.5rem;
+            font-weight: bold;
+        }
+
+        .news-item a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--primary-color);
+            color: white;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .loading-message {
+            text-align: center;
+            padding: 20px;
+            color: var(--secondary-color);
+            font-size: 1.1em;
+            animation: pulse 1.5s infinite;
+        }
+
+        .error-message {
+            padding: 20px;
+            margin: 10px;
+            border-radius: 8px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+        }
+
+        .refresh-button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .refresh-button:hover {
+            background-color: var(--primary-color);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            height: 300px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Indian Financial Policy Analysis Dashboard</h1>
+        <p>Real-time Market Intelligence for Policy Makers</p>
+    </header>
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2>Financial News Analysis</h2>
+                <div id="news-feed">
+                    <div class="loading">Loading latest financial news...</div>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Sentiment Analysis</h2>
+                <div class="sentiment-bar">
+                    <div id="positive-sentiment"></div>
+                    <div id="neutral-sentiment"></div>
+                    <div id="negative-sentiment"></div>
+                </div>
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3>Sentiment Distribution</h3>
+                        <canvas id="sentimentChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Sentiment Trends</h3>
+                        <canvas id="trendsChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Source Distribution</h3>
+                        <canvas id="sourcesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Data Sources: MoneyControl, Economic Times, Business Standard, LiveMint</p>
+        <p>Updates every 5 minutes | Last updated: <span id="last-updated"></span></p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html> 
